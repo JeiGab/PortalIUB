@@ -1,0 +1,199 @@
+@import url('https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
+
+body {
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: row; 
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    position: relative; 
+}
+
+.sidebar {
+    padding: 5px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-right: 1px solid #ddd;
+    width: 250px;
+    z-index: 1000;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.bg-light {
+    background-color: #ffffff !important;
+}
+
+.sidebar {
+    display: none;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 15px;
+    margin-right: 0;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar button img {
+    margin-right: 15px;
+    margin-top: 10px;
+}
+
+.sidebar button:hover {
+    background-color: #fdee99;
+}
+
+#sidebarToggle {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1100; 
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    outline: none;
+}
+
+#sidebarToggle img {
+    max-width: 40px;
+    height: auto;
+    margin-right: 10px;
+    background-color: transparent;
+}
+
+
+#placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+#placeholder img {
+    max-width: 100px;
+    margin-bottom: 10px;
+}
+
+.chatbox {
+    width: 90%;
+    max-width: auto;
+    height: auto;
+    padding: 30px;
+    background: #1a2239;
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 900; 
+}
+
+#messages {
+    padding: 10px;
+    height: 400px;
+    margin-bottom: 10px;
+    background-color: #1a2239;
+    color: white;
+    flex-grow: 1;
+    border-radius: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-user {
+    background-color: white;
+    color: black;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: left;
+    margin: 10px 0 10px auto;
+    word-wrap: break-word;
+    max-width: 70%;
+    position: relative;
+    align-self: flex-end;
+}
+
+.message-bot {
+    color: white;
+    text-align: left;
+    position: relative;
+    margin: 10px auto 10px 0;
+    align-self: flex-start;
+}
+
+form {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+button[type="submit"] {
+    position: absolute;
+    right: 30px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+button[type="submit"] img {
+    max-width: 40px;
+    height: auto;
+}
+
+button[type="submit"]:hover img {
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none; 
+    }
+
+    .sidebar.active {
+        display: flex; 
+    }
+}
