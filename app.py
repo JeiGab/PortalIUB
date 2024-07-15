@@ -1,12 +1,9 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
-import mysql.connector as sql
-import json
-import requests
-from google.oauth2 import service_account
-import google.auth.transport.requests
-from dotenv import load_dotenv
 import os
 import bcrypt
+from dotenv import load_dotenv
+from database import get_database_connection, validate_login, email_exists, hash_password, InsertInTable_U
+from dialogflow_bot import detect_intent_texts, SERVICE_ACCOUNT_FILE, PROJECT_ID
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -14,151 +11,31 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Secreto para la sesión
 
-# Función para cargar la ruta del archivo de credenciales
-def get_service_account_file_path(file_name):
-    try:
-        json_file_path = os.path.abspath(file_name)
-        print(f"Ruta absoluta del archivo JSON: {json_file_path}")  # Imprimir la ruta absoluta
-        
-        # Comprobar si el archivo existe y es accesible
-        if os.path.isfile(json_file_path):
-            print("El archivo JSON existe y es accesible.")
-            return json_file_path
-        else:
-            raise FileNotFoundError(f"Error: No se encontró el archivo JSON en {json_file_path}")
-    except Exception as e:
-        print(f"Error al obtener la ruta del archivo JSON: {str(e)}")
-        return None
-
-# Ruta al archivo de credenciales de la cuenta de servicio
-SERVICE_ACCOUNT_FILE = get_service_account_file_path(r"C:\Users\Jei\Downloads\credentials.json")
-
-if SERVICE_ACCOUNT_FILE:
-    # Identificador del proyecto de Dialogflow
-    PROJECT_ID = 'mani-avls'
-
-    # Configuración de las credenciales de la cuenta de servicio
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE,
-        scopes=["https://www.googleapis.com/auth/cloud-platform"]
-    )
-
-    # Función para interactuar con Dialogflow
-    def detect_intent_texts(project_id, session_id, texts, language_code):
-        session = requests.Session()
-
-        # URL de la API de Dialogflow
-        url = f'https://dialogflow.googleapis.com/v2/projects/{project_id}/agent/sessions/{session_id}:detectIntent'
-
-        # Asegúrate de que las credenciales están actualizadas
-        request = google.auth.transport.requests.Request()
-        credentials.refresh(request)
-
-        headers = {
-            'Authorization': f'Bearer {credentials.token}',
-            'Content-Type': 'application/json'
-        }
-
-        responses = []
-        for text in texts:
-            body = {
-                "query_input": {
-                    "text": {
-                        "text": text,
-                        "language_code": language_code
-                    }
-                }
-            }
-
-            response = session.post(url, headers=headers, json=body, verify=False)
-            response.raise_for_status()
-            responses.append(response.json())
-
-        return responses
-
-# Configuración de la base de datos MySQL
-DB_CONFIG = {
-    'host': os.getenv('DB_HOST'),
-    'database': os.getenv('DB_DATABASE'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'port': int(os.getenv('DB_PORT'))
-}
-
-try:
-    conn = sql.connect(**DB_CONFIG)
-    cursor = conn.cursor()
-    cursor.execute("SELECT DATABASE()")
-    row = cursor.fetchone()
-    print("Conexión exitosa a la base de datos:", row)
-    conn.close()
-except Exception as e:
-    print("Error al conectar a la base de datos:", e)
-
-# Función para establecer la conexión con la base de datos MySQL
-def get_database_connection():
-    try:
-        conn = sql.connect(**DB_CONFIG)
-        return conn
-    except Exception as e:
-        print(f"Error connecting to database: {str(e)}")
-        return None
-
-# Función para encriptar la contraseña
-def hash_password(password):
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed
-
-# Función para validar las credenciales de inicio de sesión
-def validate_login(correo, password):
-    conn = get_database_connection()
-    if conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, password FROM users WHERE correo = %s", (correo,))
-        user = cursor.fetchone()
-        conn.close()
-        if user and bcrypt.checkpw(password.encode('utf-8'), user[1].encode('utf-8')):
-            return {'id': user[0]}
-    return None
-
-# Función para verificar si el correo ya está registrado
-def email_exists(correo):
-    conn = get_database_connection()
-    if conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE correo = %s", (correo,))
-        user = cursor.fetchone()
-        conn.close()
-        return user is not None
-    return False
-
 # Ruta principal del chat
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
-# Ruta para manejar las solicitudes del chat
 @app.route('/send_message', methods=['POST'])
 def send_message():
     if SERVICE_ACCOUNT_FILE:
         message = request.form['messageInput']
-        session_id = 'unique_session_id'  # Puedes generar un ID de sesión único aquí
-
+        session_id = 'unique_session_id'
         texts = [message]
         language_code = 'es'
-
-        # Obtener la respuesta de Dialogflow
         responses = detect_intent_texts(PROJECT_ID, session_id, texts, language_code)
-
-        # Obtener todos los textos de cumplimiento de cada respuesta
-        fulfillment_texts = []
+        fulfillment_messages = []
         for response in responses:
-            fulfillment_text = response.get('queryResult', {}).get('fulfillmentText', '')
-            fulfillment_texts.append(fulfillment_text)
-
-        return jsonify({'response': fulfillment_texts})
+            query_result = response.get('queryResult', {})
+            if 'fulfillmentMessages' in query_result:
+                fulfillment_messages.extend(query_result['fulfillmentMessages'])
+        result = []
+        for message in fulfillment_messages:
+            if 'text' in message:
+                result.append(message['text']['text'][0])
+            elif 'payload' in message:
+                result.append(message['payload'])
+        return jsonify({'response': result})
     else:
         message = request.form['messageInput']
         return jsonify({'response': f'Mensaje recibido: {message}'})
@@ -218,33 +95,10 @@ def register():
         # Llamar a la función para insertar usuario en la base de datos
         if InsertInTable_U((correo, hashed_password.decode('utf-8'), first_name, program)):
             flash('Usuario registrado exitosamente', 'success')
-            return redirect(url_for('index'))
         else:
             flash('Error al registrar usuario', 'error')
 
     return render_template('register.html')
-
-
-# Función para insertar datos en la tabla 'users'
-def InsertInTable_U(datos):
-    try:
-        conn = get_database_connection()
-        if conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO users (correo, password, first_name, program) 
-                VALUES (%s, %s, %s, %s)
-            """, datos)
-            conn.commit()
-            conn.close()
-            print("Datos insertados correctamente.")
-            return True
-        else:
-            print("Error: No se pudo conectar a la base de datos.")
-            return False
-    except Exception as e:
-        print("Error al insertar datos:", e)
-        return False
 
 # Ruta para verificar si el correo ya está registrado
 @app.route('/check_email', methods=['POST'])

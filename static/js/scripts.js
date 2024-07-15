@@ -2,9 +2,7 @@ $(document).ready(function() {
     $('#sidebarToggle').click(function() {
         $('.sidebar').toggleClass('active'); // Toggle para añadir o quitar la clase 'active' que muestra la barra lateral
     });
-});
 
-$(document).ready(function() {
     // Función para manejar el envío del formulario de registro
     $('#register-form').on('submit', function(e) {
         e.preventDefault(); // Evitar que el formulario se envíe automáticamente
@@ -53,23 +51,23 @@ $(document).ready(function() {
         return true;
     }
 
-    // Funciones para el formulario de chat (mantenido como está en tu código actual)
+    // Funciones para el formulario de chat
     $('#chat-form').on('submit', function(e) {
         e.preventDefault();
         sendMessage();
     });
 
     function sendMessage() {
-        var messageInput = document.getElementById('messageInput'); // Corregido el nombre del id aquí
+        var messageInput = document.getElementById('messageInput');
         var message = messageInput.value.trim();
-    
+
         if (message === '') {
             return;
         }
-    
+
         // Mostrar mensaje del usuario en el chat
         addMessage('user', message);
-    
+
         // Enviar mensaje al servidor Flask
         fetch('/send_message', {
             method: 'POST',
@@ -83,9 +81,13 @@ $(document).ready(function() {
             // Mostrar respuesta del chatbot
             var responses = data.response;
             responses.forEach(function(response) {
-                addMessage('bot', response);
+                if (typeof response === 'object' && response.hasOwnProperty('message') && response.hasOwnProperty('link')) {
+                    addMessage('bot', response.message, response.link);
+                } else {
+                    addMessage('bot', response);
+                }
             });
-    
+
             // Limpiar campo de entrada
             messageInput.value = '';
         })
@@ -93,30 +95,36 @@ $(document).ready(function() {
             console.error('Error al enviar mensaje:', error);
         });
     }
-    
-    function addMessage(sender, message) {
+
+    function addMessage(sender, message, link = null) {
         var messagesContainer = document.getElementById('messages');
-    
+
         // Si hay contenido de bienvenida, eliminarlo al enviar el primer mensaje
         var placeholder = document.getElementById('placeholder');
         if (placeholder) {
             placeholder.remove();
         }
-    
+
         var messageElement = document.createElement('div');
         messageElement.classList.add(sender === 'user' ? 'message-user' : 'message-bot');
-        messageElement.textContent = message;
-    
+
+        // Verificar si el mensaje incluye texto y un enlace
+        if (link) {
+            messageElement.innerHTML = `${message} <a href="${link}" target="_blank">${link}</a>`;
+        } else {
+            messageElement.textContent = message;
+        }
+
         messagesContainer.appendChild(messageElement);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-});
 
-  // Toggle para mostrar/ocultar la contraseña
-  document.getElementById('togglePassword').addEventListener('click', function (e) {
-    const password = document.getElementById('password');
-    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-    this.classList.toggle('bi-eye');
-    this.classList.toggle('bi-eye-slash');
+    // Toggle para mostrar/ocultar la contraseña
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+        const password = document.getElementById('password');
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
 });
