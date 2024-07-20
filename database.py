@@ -20,10 +20,10 @@ try:
     cursor = conn.cursor()
     cursor.execute("SELECT DATABASE()")
     row = cursor.fetchone()
-    print("Conexión exitosa a la base de datos:", row)
+    print("Conexión exitosa a la base de datos.")
     conn.close()
 except Exception as e:
-    print("Error al conectar a la base de datos:", e)
+    print("Error al conectar a la base de datos.")
 
 # Función para establecer la conexión con la base de datos MySQL
 def get_database_connection():

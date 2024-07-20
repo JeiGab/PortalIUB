@@ -23,7 +23,6 @@
                                 <img src="/static/imagenes/bot.png" alt="Imagen de Contactar"> Preguntar a IA 
                             </button>
                         </li>
-                    
                     </ul>
                     <ul class="nav flex-column mt-auto">
                         <li class="nav-item">
@@ -31,7 +30,9 @@
                                 <img src="/static/imagenes/cerrar-sesion.png" alt="Imagen de Cerrar Sesión"> Cerrar Sesión 
                             </button>
                         </li>
-                        
+                            <button onclick="window.location.href='/';" class="btnConfig">
+                                <img src="/static/imagenes/configuraciones (1).png" alt="Imagen de configuracionen"> Configuración
+                            </button>
                     </ul>
                 </div>
             </nav>
@@ -40,11 +41,36 @@
                     <img src="/static/imagenes/menu.png" alt="Abrir barra lateral"> 
                 </button>
                 <div class="chatbox">
-                    <div id="messages"></div>
-                    <div id="placeholder">
-                        <img src="/static/imagenes/file.png" alt="Imagen de bienvenida" id="welcome-image"> 
-                        <p id="welcome-text">¡Bienvenido/a al Asistente Virtual de la IUB!</p>
-                        <p>Estoy aquí para ayudarte con preguntas sobre admisiones, programas académicos, matrícula, becas y más. Escribe tu pregunta y obtén la información que necesitas.</p>
+                    <div class="chatbox-header">
+                        <div class="social-buttons">
+                            <button onclick="window.open('https://www.facebook.com/UniBarranquilla?locale=es_LA', '_blank');" class="btnFacebook">
+                                <img src="/static/imagenes/facebook.png" alt="Imagen de facebook"> 
+                            </button>
+                            
+                            <button onclick="window.open('https://www.instagram.com/unibarranquilla_/?fbclid=IwZXh0bgNhZW0CMTAAAR2wYVZOblGV7EtZ1G7AMjhkJYHKCAwWZIIY4VTtC0YLSneFxcgMOkV-WF8_aem_pkJSufIf7keE4zoeOSODAA', '_blank');" class="btnInstagram">
+                                <img src="/static/imagenes/social.png" alt="Imagen de Instagram"> 
+                            </button>
+                            
+                            <button onclick="window.open('https://www.unibarranquilla.edu.co/', '_blank');" class="btnSitio">
+                                <img src="/static/imagenes/sitio-web.png" alt="Imagen de sitio-web"> 
+                            </button>
+                        </div>
+                        
+                        <div class="title">Portal de Ayuda IUB</div>
+                        
+                        <div class="usage-button">
+                                <button onclick="showAlert();" class="btnUsage" id="btnUsage">
+                                    <img src="/static/imagenes/preguntas-y-respuestas.png" alt="Imagen de Uso"> 
+                                </button>  
+                        </div>
+                    </div>
+                    <div class="chatbox-content">
+                        <div id="messages"></div>
+                        <div id="placeholder">
+                            <img src="/static/imagenes/file.png" alt="Imagen de bienvenida" id="welcome-image"> 
+                            <p id="welcome-text">¡Bienvenido/a al Asistente Virtual de la IUB!</p>
+                            <p>Estoy aquí para ayudarte con preguntas sobre admisiones, programas académicos, matrícula, becas y más. Escribe tu pregunta y obtén la información que necesitas.</p>
+                        </div>
                     </div>
                     <form id="chat-form">
                         <input type="text" id="messageInput" placeholder="Escribe aquí..." required>

@@ -1,13 +1,19 @@
+# dialogflow_bot.py
+
 import os
 import json
 import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
+from dotenv import load_dotenv
+
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 # Función para cargar la ruta del archivo de credenciales
-def get_service_account_file_path(file_name):
+def get_service_account_file_path():
     try:
-        json_file_path = os.path.abspath(file_name)
+        json_file_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         print(f"Ruta absoluta del archivo JSON: {json_file_path}")  # Imprimir la ruta absoluta
         
         # Comprobar si el archivo existe y es accesible
@@ -21,7 +27,7 @@ def get_service_account_file_path(file_name):
         return None
 
 # Ruta al archivo de credenciales de la cuenta de servicio
-SERVICE_ACCOUNT_FILE = get_service_account_file_path(r"C:\Users\Jei\Downloads\credentials.json")
+SERVICE_ACCOUNT_FILE = get_service_account_file_path()
 
 if SERVICE_ACCOUNT_FILE:
     # Identificador del proyecto de Dialogflow
