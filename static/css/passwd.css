@@ -1,0 +1,21 @@
+
+.main-content {
+    padding: 2rem;
+    border-radius: 8px;
+}
+.card-custom {
+    max-width: 500px;
+    width: 100%;
+    margin-top: 3rem;
+}
+.btn-custom {
+    width: 48%;
+    margin-top: 32%;
+    color: black;
+    border: 1px solid #0f0f0f;
+}
+
+.btn-custom:hover {
+    background-color: #fdee99;
+    color: black;
+}

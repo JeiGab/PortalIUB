@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observaciones - Portal de Ayuda IUB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/base.css"> 
+    <link rel="stylesheet" href="/static/css/sidebar.css"> 
+    <link rel="stylesheet" href="/static/css/passwd.css"> 
+    <link rel="shortcut icon" href="/static/imagenes/favicon.ico">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Barra lateral -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item text-center">
+                            <img src="/static/imagenes/logo.png" alt="Logo de la Universidad">
+                        </li>
+                    </ul>
+                    <div class="sidebar-footer">
+                        <!-- Botón IA -->
+                        <button class="btnIA" onclick="window.location.href='/post-login';">
+                            <img src="/static/imagenes/bot.png" alt="Imagen de Contactar"> Preguntar a la IA
+                        </button>
+                        <!-- Botón Observaciones -->
+                        <button class="btnIA" onclick="window.location.href='/recomends';">
+                            <img src="/static/imagenes/sugerencia.png" alt="Imagen de Observaciones"> Observaciones
+                        </button>
+                        <!-- Botón Configuración -->
+                        <button class="btnConfig" id="configMenuButton">
+                            <img src="/static/imagenes/configuraciones (1).png" alt="Imagen de configuración"> Configuración
+                        </button>
+                        <!-- Menú desplegable -->
+                        <div id="configMenu" class="dropdown-menu">
+                            <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
+                            <a class="dropdown-item" href="/change-password">Cambiar Contraseña</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Contenido principal -->
+            <main class="col-md-9 col-lg-10 ml-sm-auto px-md-4">
+                <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+                    <div class="card shadow card-custom" style="width: 100%; max-width: 800px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Envíanos tus Observaciones</h5>
+                            
+                            <!-- Mensajes flash -->
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    <div class="alert alert-{{ messages[0][0] }}">
+                                        {% for category, message in messages %}
+                                            {{ message }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <form action="/recomends" method="POST">
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Mensaje</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" placeholder="Escriba su recomendación, problema o crítica acerca del asistente virtual de preguntas frecuentes aquí" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9i7KZoXWm1KDcTtknzY7mxH6FzFjZfVpA/oDg9Ncm1GZgG7PmWzG" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVUI8x7W2NfYqA8LYTFR74ZQmeUm7r6gJ0jb6ch4ygg/FLAm1j8GROzW3Vq5oflQ" crossorigin="anonymous"></script>
+    <script src="/static/js/sidebar-config.js"></script>
+    <script src="/static/js/change-password.js"></script>
+    <script>
+        document.getElementById('configMenuButton').addEventListener('click', function() {
+            document.getElementById('configMenu').classList.toggle('show');
+        });
+    </script>
+</body>
+</html>

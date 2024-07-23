@@ -40,6 +40,28 @@ def hash_password(password):
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed
 
+# Función para actualizar la contraseña de un usuario
+def update_password(user_id, new_password):
+    try:
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET password = %s 
+                WHERE id = %s
+            """, (new_password, user_id))
+            conn.commit()
+            conn.close()
+            print("Contraseña actualizada correctamente.")
+            return True
+        else:
+            print("Error: No se pudo conectar a la base de datos.")
+            return False
+    except Exception as e:
+        print("Error al actualizar la contraseña:", e)
+        return False
+
 # Función para validar las credenciales de inicio de sesión
 def validate_login(correo, password):
     conn = get_database_connection()
@@ -78,8 +100,30 @@ def InsertInTable_U(datos):
             print("Datos insertados correctamente.")
             return True
         else:
-            print("Error: No se pudo conectar a la base de datos.")
+            print("Error: No se pudo conectar a la base de datos normal.")
             return False
     except Exception as e:
         print("Error al insertar datos:", e)
+        return False
+
+# Función para insertar una observación en la tabla 'users'
+def insert_observation(user_id, observation):
+    try:
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET observaciones = %s 
+                WHERE id = %s
+            """, (observation, user_id))
+            conn.commit()
+            conn.close()
+            print("Observación insertada correctamente.")
+            return True
+        else:
+            print("Error: No se pudo conectar a la base de datos por observaciones.")
+            return False
+    except Exception as e:
+        print("Error al insertar la observación:", e)
         return False
