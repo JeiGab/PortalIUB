@@ -155,7 +155,8 @@ button[type="submit"]:hover img {
     }
 
     .sidebar.active {
-        display: flex;
+        display: none;
+
     }
     .chatbox {
         width: 100%;

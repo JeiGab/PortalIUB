@@ -45,6 +45,12 @@
 
             <!-- Contenido principal -->
             <main class="col-md-9 col-lg-10 ml-sm-auto px-md-4">
+                <div class="d-flex justify-content-between align-items-center my-3">
+                    <div class="title"></div>
+                    <button class="btn btn-light d-block d-md-none" id="sidebarToggle">
+                        <img src="/static/imagenes/menu.png" alt="Abrir barra lateral">
+                    </button>
+                </div>
                 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
                     <div class="card shadow card-custom" style="width: 100%; max-width: 800px;">
                         <div class="card-body">
@@ -79,11 +85,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9i7KZoXWm1KDcTtknzY7mxH6FzFjZfVpA/oDg9Ncm1GZgG7PmWzG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVUI8x7W2NfYqA8LYTFR74ZQmeUm7r6gJ0jb6ch4ygg/FLAm1j8GROzW3Vq5oflQ" crossorigin="anonymous"></script>
     <script src="/static/js/sidebar-config.js"></script>
-    <script src="/static/js/change-password.js"></script>
-    <script>
-        document.getElementById('configMenuButton').addEventListener('click', function() {
-            document.getElementById('configMenu').classList.toggle('show');
-        });
-    </script>
 </body>
 </html>

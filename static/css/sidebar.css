@@ -55,6 +55,21 @@
     color: black;
 }
 
+#sidebarToggle {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 5px;
+}
+#sidebarToggle img {
+    width: 32px; /* Adjust the width */
+    height: 32px; /* Adjust the height */
+}
+
 .btnConfig, .btnIA {
     height: 7vh;
     background: none;
@@ -80,4 +95,73 @@
 .btnConfig:hover, .btnIA:hover {
     background-color: #fdee99;
     color: black;
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btnFacebook, .btnInstagram, .btnSitio {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0 5px;
+}
+
+.btnFacebook img, .btnInstagram img, .btnSitio img {
+    border: none;
+    margin: 0;
+    display: block;
+}
+
+.social-buttons img {
+    border: none;
+    margin: 0;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .sidebar.active {
+        display: block;
+    }
+
+    .chatbox {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .alert-container {
+        font-size: 0.9rem;
+        padding: 15px;
+    }
+
+    .chatbox-header .title {
+        flex-grow: 1;
+        text-align: center;
+        font-size: 1.5rem;
+        margin-left: 80px;
+    }
+
+    .btnConfig {
+        position: relative;
+    }
+
+    .sidebarToggle {
+        background: none;
+    }
+
+    .social-buttons {
+        display: none;
+    }
+
+    .sidebar-footer .social-buttons {
+        display: flex;
+    }
 }

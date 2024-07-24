@@ -1,3 +1,4 @@
+/* Estilos básicos para el alert */
 .blur-overlay {
     position: fixed;
     top: 0;
@@ -12,15 +13,15 @@
 .alert-container {
     position: fixed;
     top: 20%;
-    left: 60%;
-    transform: translateX(-50%);
+    left: 50%;
+    transform: translate(-50%, -20%);
     background-color: #ffffff;
     border: 1px solid #ddd;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     z-index: 1000;
-    max-width: 100%;
-    width: 700px;
+    max-width: 90%; /* Ajusta el ancho máximo */
+    width: 700px; /* Ancho inicial */
     text-align: center;
     border-radius: 8px;
 }
@@ -58,4 +59,32 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .alert-container {
+        top: 10%; 
+        left: 50%;
+        transform: translate(-50%, 0); /* Ajusta la posición vertical */
+        width: 90%; /* Ajusta el ancho para pantallas pequeñas */
+        padding: 15px; /* Reduce el padding */
+    }
+
+    .alert-header h2 {
+        font-size: 1.25rem; /* Reduce el tamaño de la fuente */
+    }
+
+    .alert-content {
+        font-size: 0.875rem; /* Reduce el tamaño de la fuente */
+    }
+
+    .alert-icon {
+        width: 25px; /* Reduce el tamaño del icono */
+        height: 25px; /* Reduce el tamaño del icono */
+    }
+
+    .alert-close {
+        font-size: 0.875rem; /* Reduce el tamaño de la fuente del botón */
+        padding: 8px 16px; /* Ajusta el padding del botón */
+    }
 }
