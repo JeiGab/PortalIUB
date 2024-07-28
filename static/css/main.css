@@ -1,0 +1,68 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.navbar {
+    background-color: #0f1d37 !important;
+}
+
+.navbar-logo {
+    height: 90px !important;
+    width: auto !important;
+    object-fit: contain !important;
+    margin-left: -100px;
+}
+
+.navbar-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.navbar-text {
+    color: white !important;
+    font-size: 2rem;
+}
+
+.custom-nav-links .nav-link {
+    color: white !important;
+}
+
+.custom-nav-links .nav-link:hover {
+    color: rgb(157, 161, 161) !important;
+}
+
+.custom-nav-menu {
+    position: fixed;
+    top: 60px;
+    right: 10px;
+    width: 200px;
+    background-color: #0f1d37;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 1000;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .navbar-title .navbar-text {
+        font-size: 1rem;
+        position: relative;
+        left: 60%;
+        top: 5px !important;
+        transform: translateX(-50%);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .lead {
+        font-size: 1rem;
+    }
+
+    .navbar-logo {
+        height: 60px !important;
+        margin-left: 0;
+    }
+}

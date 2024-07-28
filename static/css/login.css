@@ -1,17 +1,31 @@
 body {
-    background-color: white;
-  }
-  
-  .input-group-text {
-    background-color: #cbcfcf; 
-  }
-  
-  .btn-info {
-    background-color: #1a2239; 
-    border-radius: 15px;
-    border: none;
-  }
-  
+  background-color: white;
+}
 
+.input-group-text {
+  background-color: #cbcfcf; 
+}
 
-  
+.btn-info {
+  background-color: #0f1d37; 
+  border-radius: 15px;
+  border: none;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #0f1d37;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.back-button:hover {
+  background-color: #31d2f2;
+  color: white;
+}

@@ -17,6 +17,28 @@ app.secret_key = os.urandom(24)  # Secreto para la sesión
 def index():
     return render_template('index.html')
 
+# Ruta para el login (GET)
+@app.route('/login', methods=['GET'])
+def login_form():
+    return render_template('login.html')
+
+# Ruta para el login (POST)
+@app.route('/login', methods=['POST'])
+def login():
+    correo = request.form['correo']
+    password = request.form['password']
+
+    # Validar las credenciales de inicio de sesión
+    user = validate_login(correo, password)
+
+    if user:
+        session['user_id'] = user['id']  # Almacena el ID del usuario en la sesión
+        return redirect(url_for('post_login'))
+    else:
+        flash('Credenciales incorrectas', 'error')
+
+    return render_template('login.html')
+
 @app.route('/send_message', methods=['POST'])
 def send_message():
     if SERVICE_ACCOUNT_FILE:
@@ -41,29 +63,11 @@ def send_message():
         message = request.form['messageInput']
         return jsonify({'response': f'Mensaje recibido: {message}'})
 
-# Ruta para el formulario de inicio de sesión
-@app.route('/login', methods=['POST'])
-def login():
-    if request.method == 'POST':
-        correo = request.form['correo']
-        password = request.form['password']
-
-        # Validar las credenciales de inicio de sesión
-        user = validate_login(correo, password)
-
-        if user:
-            session['user_id'] = user['id']  # Almacena el ID del usuario en la sesión
-            return redirect(url_for('post_login'))
-        else:
-            flash('Credenciales incorrectas', 'error')
-
-    return render_template('index.html')
-
 # Ruta para la página post-login
 @app.route('/post-login')
 def post_login():
     if 'user_id' not in session:
-        return redirect(url_for('index'))
+        return redirect(url_for('login_form'))
     return render_template('post-login.html')
 
 # Ruta para cerrar sesión
@@ -125,37 +129,35 @@ def recomends_form():
     
     return render_template('recomends.html')
 
-@app.route('/recomends', methods=['GET', 'POST'])
+@app.route('/recomends', methods=['POST'])
 def recomends():
     if 'user_id' not in session:
         flash('Debes iniciar sesión para enviar una observación', 'error')
         return redirect(url_for('index'))
 
-    if request.method == 'POST':
-        message = request.form['message']
+    message = request.form['message']
 
-        if not message:
-            flash('El mensaje no puede estar vacío', 'error')
+    if not message:
+        flash('El mensaje no puede estar vacío', 'error')
+    else:
+        user_id = session.get('user_id')
+
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor()
+            try:
+                cursor.execute("INSERT INTO observations (user_id, message) VALUES (%s, %s)", (user_id, message))
+                conn.commit()
+                flash('Observación enviada correctamente', 'success')
+            except sql.Error as e:
+                flash(f'Error al enviar la observación: {e}', 'error')
+            finally:
+                cursor.close()
+                conn.close()
         else:
-            user_id = session.get('user_id')
-
-            conn = get_database_connection()
-            if conn:
-                cursor = conn.cursor()
-                try:
-                    cursor.execute("INSERT INTO observations (user_id, message) VALUES (%s, %s)", (user_id, message))
-                    conn.commit()
-                    flash('Observación enviada correctamente', 'success')
-                except sql.Error as e:
-                    flash(f'Error al enviar la observación: {e}', 'error')
-                finally:
-                    cursor.close()
-                    conn.close()
-            else:
-                flash('Error al conectar a la base de datos', 'error')
+            flash('Error al conectar a la base de datos', 'error')
 
     return render_template('recomends.html')
-
 
 # Ruta para mostrar la página de cambio de contraseña
 @app.route('/change-password', methods=['GET'])
