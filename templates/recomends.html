@@ -39,6 +39,27 @@
                             <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
                             <a class="dropdown-item" href="/change-password">Cambiar Contraseña</a>
                         </div>
+                        <!-- Mostrar nombre y apellido del usuario -->
+                        <div class="user-info">
+                            <img src="/static/imagenes/usuario.png" alt="Imagen de usuario">
+                            {% if session['first_name'] and session['last_name'] %}
+                            {{ session['first_name'] }} {{ session['last_name'] }}
+                            {% else %}
+                            User
+                            {% endif %}
+                        </div>
+                        <!-- Botones de redes sociales para pantallas pequeñas -->
+                        <div class="social-buttons d-md-none d-flex justify-content-center">
+                            <button onclick="window.open('https://www.facebook.com/UniBarranquilla?locale=es_LA', '_blank');" class="btnFacebook">
+                                <img src="/static/imagenes/facebook.png" alt="Imagen de facebook">
+                            </button>
+                            <button onclick="window.open('https://www.instagram.com/unibarranquilla_/?fbclid=IwZXh0bgNhZW0CMTAAAR2wYVZOblGV7EtZ1G7AMjhkJYHKCAwWZIIY4VTtC0YLSneFxcgMOkV-WF8_aem_pkJSufIf7keE4zoeOSODAA', '_blank');" class="btnInstagram">
+                                <img src="/static/imagenes/social.png" alt="Imagen de Instagram">
+                            </button>
+                            <button onclick="window.open('https://www.unibarranquilla.edu.co/', '_blank');" class="btnSitio">
+                                <img src="/static/imagenes/sitio-web.png" alt="Imagen de sitio-web">
+                            </button>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -53,6 +74,7 @@
                 </div>
                 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
                     <div class="card shadow card-custom" style="width: 100%; max-width: 800px;">
+                        <img src="/static/imagenes/itsa.png" class="card-img-top" alt="Imagen de Observaciones" style="width: 20rem; height: 5rem; margin-left: 1rem; margin-top: 1rem;">
                         <div class="card-body">
                             <h5 class="card-title text-center">Envíanos tus Observaciones</h5>
                             
@@ -72,7 +94,10 @@
                                     <label for="message" class="form-label">Mensaje</label>
                                     <textarea class="form-control" id="message" name="message" rows="5" placeholder="Escriba su recomendación, problema o crítica acerca del asistente virtual de preguntas frecuentes aquí" required></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Enviar</button>
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/post-login';">Regresar</button>
+                                    <button type="submit" class="btn btn-primary">Enviar</button>
+                                </div>
                             </form>
                         </div>
                     </div>

@@ -31,6 +31,7 @@
                         <button class="btnIA" onclick="window.location.href='/recomends';">
                             <img src="/static/imagenes/sugerencia.png" alt="Imagen de "> Observaciones
                         </button>
+                        
                         <!-- Botón Configuración -->
                         <button class="btnConfig" id="configMenuButton">
                             <img src="/static/imagenes/configuraciones (1).png" alt="Imagen de configuración"> Configuración
@@ -40,6 +41,16 @@
                             <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
                             <a class="dropdown-item" href="/change-password">Cambiar Contraseña</a>
                         </div>
+                        <!-- Mostrar nombre y apellido del usuario -->
+                        <div class="user-info">
+                            <img src="/static/imagenes/usuario.png" alt="Imagen de usuario"> 
+                            {% if session['first_name'] and session['last_name'] %}
+                            {{ session['first_name'] }} {{ session['last_name'] }}
+                            {% else %}
+                            User
+                            {% endif %}
+                        </div>
+                        
                         <!-- Botones de redes sociales para pantallas pequeñas -->
                         <div class="social-buttons d-md-none d-flex justify-content-center">
                             <button onclick="window.open('https://www.facebook.com/UniBarranquilla?locale=es_LA', '_blank');" class="btnFacebook">

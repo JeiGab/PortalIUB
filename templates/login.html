@@ -31,7 +31,7 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST" action="/login">
+        <form method="POST" action="{{ url_for('login') }}">
             <div class="input-group mt-4">
                 <div class="input-group-text">
                     <img src="{{ url_for('static', filename='imagenes/nueva-cuenta.png') }}" alt="username-icon" style="height: 2rem" />
@@ -47,12 +47,15 @@
                     <i id="togglePassword" class="bi bi-eye-slash"></i>
                 </div>
             </div>
+            <div class="pt-1">
+                <a href="{{ url_for('forgot_password') }}" class="text-decoration-none text-info fw-semibold fst-italic" style="font-size: 0.9rem">Olvidaste tu contraseña?</a>
+            </div>
             <button type="submit" class="btn btn-info text-white w-100 mt-4 fw-semibold shadow-sm">Iniciar sesión</button>
         </form>
 
         <div class="d-flex gap-1 justify-content-center mt-1">
             <div>¿No tienes cuenta?</div>
-            <a href="/register" class="text-decoration-none text-info fw-semibold custom-link">Regístrate</a>
+            <a href="{{ url_for('register') }}" class="text-decoration-none text-info fw-semibold custom-link">Regístrate</a>
         </div>
     </div>
 
@@ -60,9 +63,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK"
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
 
     <!-- JavaScript personalizado -->
     <script src="/static/js/password-toggle.js"></script> 

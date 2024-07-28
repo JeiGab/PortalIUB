@@ -67,12 +67,13 @@ def validate_login(correo, password):
     conn = get_database_connection()
     if conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id, password FROM users WHERE correo = %s", (correo,))
+        cursor.execute("SELECT id, first_name, last_name, password FROM users WHERE correo = %s", (correo,))
         user = cursor.fetchone()
         conn.close()
-        if user and bcrypt.checkpw(password.encode('utf-8'), user[1].encode('utf-8')):
-            return {'id': user[0]}
+        if user and bcrypt.checkpw(password.encode('utf-8'), user[3].encode('utf-8')):
+            return {'id': user[0], 'first_name': user[1], 'last_name': user[2]}
     return None
+
 
 # Función para verificar si el correo ya está registrado
 def email_exists(correo):
@@ -92,8 +93,8 @@ def InsertInTable_U(datos):
         if conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO users (correo, password, first_name, program) 
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO users (correo, password, first_name, last_name, program) 
+                VALUES (%s, %s, %s, %s, %s)
             """, datos)
             conn.commit()
             conn.close()
@@ -105,6 +106,7 @@ def InsertInTable_U(datos):
     except Exception as e:
         print("Error al insertar datos:", e)
         return False
+
 
 # Función para insertar una observación en la tabla 'users'
 def insert_observation(user_id, observation):

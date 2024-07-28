@@ -11,6 +11,7 @@ filelock==3.14.0
 Flask==3.0.3
 Flask-Login==0.6.3
 Flask-Session==0.8.0
+Flask-Mail==0.10.0
 google-auth==2.30.0
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.0

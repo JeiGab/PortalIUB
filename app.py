@@ -1,16 +1,17 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
 import os
 import bcrypt
+from flask_mail import Mail
 from dotenv import load_dotenv
 import mysql.connector as sql
 from database import get_database_connection, validate_login, email_exists, hash_password, InsertInTable_U, update_password, insert_observation
 from dialogflow_bot import detect_intent_texts, SERVICE_ACCOUNT_FILE, PROJECT_ID
 
-# Cargar las variables de entorno desde el archivo .env
+
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Secreto para la sesión
+app.secret_key = os.urandom(24)  
 
 # Ruta principal del chat
 @app.route('/')
@@ -22,7 +23,6 @@ def index():
 def login_form():
     return render_template('login.html')
 
-# Ruta para el login (POST)
 @app.route('/login', methods=['POST'])
 def login():
     correo = request.form['correo']
@@ -32,7 +32,9 @@ def login():
     user = validate_login(correo, password)
 
     if user:
-        session['user_id'] = user['id']  # Almacena el ID del usuario en la sesión
+        session['user_id'] = user['id'] 
+        session['first_name'] = user['first_name']  
+        session['last_name'] = user['last_name'] 
         return redirect(url_for('post_login'))
     else:
         flash('Credenciales incorrectas', 'error')
@@ -63,11 +65,19 @@ def send_message():
         message = request.form['messageInput']
         return jsonify({'response': f'Mensaje recibido: {message}'})
 
+# Ruta para la página de "Olvidaste tu contraseña"
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        correo = request.form['correo']
+        return redirect(url_for('login'))
+    return render_template('forgot-password.html')
+
 # Ruta para la página post-login
 @app.route('/post-login')
 def post_login():
     if 'user_id' not in session:
-        return redirect(url_for('login_form'))
+        return redirect(url_for('login'))
     return render_template('post-login.html')
 
 # Ruta para cerrar sesión
@@ -77,13 +87,13 @@ def logout():
     flash('Has cerrado sesión exitosamente', 'success')
     return redirect(url_for('index'))
 
-# Ruta para el formulario de registro de usuarios
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         correo = request.form['correo']
         password = request.form['password']
         first_name = request.form['first_name']
+        last_name = request.form['last_name']
         program = request.form['program']
 
         # Verificar si el correo ya está registrado
@@ -105,7 +115,7 @@ def register():
         hashed_password = hash_password(password)
 
         # Llamar a la función para insertar usuario en la base de datos
-        if InsertInTable_U((correo, hashed_password.decode('utf-8'), first_name, program)):
+        if InsertInTable_U((correo, hashed_password.decode('utf-8'), first_name, last_name, program)):
             flash('Usuario registrado exitosamente', 'success')
         else:
             flash('Error al registrar usuario', 'error')
@@ -119,6 +129,13 @@ def check_email():
     correo = data['correo']
     exists = email_exists(correo)
     return jsonify({'exists': exists})
+
+#Configuracion flaskMail
+app.config['MAIL_SERVER'] = 'smtp.yourmailserver.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
+app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
 
 # Ruta para mostrar el formulario de observaciones
 @app.route('/recomends', methods=['GET'])
