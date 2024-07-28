@@ -4,15 +4,57 @@ import bcrypt
 from flask_mail import Mail
 from dotenv import load_dotenv
 import mysql.connector as sql
+from email_utils import send_reset_email, verify_reset_token
 from database import get_database_connection, validate_login, email_exists, hash_password, InsertInTable_U, update_password, insert_observation
 from dialogflow_bot import detect_intent_texts, SERVICE_ACCOUNT_FILE, PROJECT_ID
-
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  
+app.secret_key = os.urandom(24)
 
+# Configuración de Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  
+mail = Mail(app)
+
+
+class User:
+    def __init__(self, id, correo, password, first_name, last_name, program):
+        self.id = id
+        self.correo = correo
+        self.password = password
+        self.first_name = first_name
+        self.last_name = last_name
+        self.program = program
+
+    @staticmethod
+    def get_by_email(correo):
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE correo = %s", (correo,))
+            user_data = cursor.fetchone()
+            conn.close()
+            if user_data:
+                return User(**user_data)
+        return None
+
+    @staticmethod
+    def get_by_id(user_id):
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+            user_data = cursor.fetchone()
+            conn.close()
+            if user_data:
+                return User(**user_data)
+        return None
+    
 # Ruta principal del chat
 @app.route('/')
 def index():
@@ -32,9 +74,9 @@ def login():
     user = validate_login(correo, password)
 
     if user:
-        session['user_id'] = user['id'] 
-        session['first_name'] = user['first_name']  
-        session['last_name'] = user['last_name'] 
+        session['user_id'] = user['id']
+        session['first_name'] = user['first_name']
+        session['last_name'] = user['last_name']
         return redirect(url_for('post_login'))
     else:
         flash('Credenciales incorrectas', 'error')
@@ -65,13 +107,62 @@ def send_message():
         message = request.form['messageInput']
         return jsonify({'response': f'Mensaje recibido: {message}'})
 
-# Ruta para la página de "Olvidaste tu contraseña"
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
         correo = request.form['correo']
-        return redirect(url_for('login'))
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT correo FROM users WHERE correo = %s", (correo,))
+            user = cursor.fetchone()
+            conn.close()
+            
+            if user:
+                if send_reset_email(user['correo']):
+                    flash('Se ha enviado un correo electrónico con las instrucciones para restablecer tu contraseña.', 'info')
+                else:
+                    flash('Error al enviar el correo electrónico. Por favor, intenta de nuevo más tarde.', 'error')
+            else:
+                flash('No se encontró ninguna cuenta con ese correo electrónico.', 'error')
+        else:
+            flash('Error al conectar a la base de datos.', 'error')
+        
+        return redirect(url_for('forgot_password'))
+    
     return render_template('forgot-password.html')
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    email = verify_reset_token(token)
+    if not email:
+        flash('El enlace para restablecer la contraseña es inválido o ha expirado.', 'error')
+        return redirect(url_for('forgot_password'))
+    
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if password:
+            hashed_password = hash_password(password) 
+            conn = get_database_connection()
+            if conn:
+                cursor = conn.cursor()
+                try:
+                    cursor.execute("UPDATE users SET password = %s WHERE correo = %s", (hashed_password, email))
+                    conn.commit()
+                    flash('Tu contraseña ha sido actualizada con éxito.', 'success')
+                    return redirect(url_for('login'))
+                except sql.Error as e:
+                    flash(f'Error al actualizar la contraseña: {e}', 'error')
+                finally:
+                    cursor.close()
+                    conn.close()
+            else:
+                flash('Error al conectar a la base de datos.', 'error')
+        else:
+            flash('Por favor, ingresa una nueva contraseña.', 'error')
+    
+    return render_template('reset-password.html', token=token)
+    
 
 # Ruta para la página post-login
 @app.route('/post-login')
@@ -83,7 +174,7 @@ def post_login():
 # Ruta para cerrar sesión
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)  # Eliminar el ID del usuario de la sesión
+    session.pop('user_id', None)
     flash('Has cerrado sesión exitosamente', 'success')
     return redirect(url_for('index'))
 
@@ -129,13 +220,6 @@ def check_email():
     correo = data['correo']
     exists = email_exists(correo)
     return jsonify({'exists': exists})
-
-#Configuracion flaskMail
-app.config['MAIL_SERVER'] = 'smtp.yourmailserver.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
-app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
 
 # Ruta para mostrar el formulario de observaciones
 @app.route('/recomends', methods=['GET'])
