@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Ayuda IUB</title>
+    <title>Historial de Búsquedas - Portal de Ayuda IUB</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/css/base.css"> 
-    <link rel="stylesheet" href="/static/css/alert.css"> 
-    <link rel="stylesheet" href="/static/css/chatbox.css"> 
-    <link rel="stylesheet" href="/static/css/sidebar.css"> 
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/alert.css">
+    <link rel="stylesheet" href="/static/css/chatbox.css">
+    <link rel="stylesheet" href="/static/css/sidebar.css">
+    <link rel="stylesheet" href="/static/css/search-history.css">
     <link rel="shortcut icon" href="/static/imagenes/favicon.ico">
 </head>
-<body onload="showAlert()">
+<body>
     <div class="container-fluid">
         <div class="row">
             <!-- Barra lateral -->
@@ -23,26 +24,20 @@
                         </li>
                     </ul>
                     <div class="sidebar-footer">
-                         <!-- Botón IA -->
-                         <button class="btnIA" onclick="window.location.href='/post-login';">
+                        <button class="btnIA" onclick="window.location.href='/post-login';">
                             <img src="/static/imagenes/bot.png" alt="Imagen de Contactar"> Preguntar a la IA
                         </button>
-                        <!-- Botón Observaciones -->
                         <button class="btnIA" onclick="window.location.href='/recomends';">
                             <img src="/static/imagenes/sugerencia.png" alt="Imagen de "> Observaciones
                         </button>
-                        
-                        <!-- Botón Configuración -->
                         <button class="btnConfig" id="configMenuButton">
                             <img src="/static/imagenes/configuraciones (1).png" alt="Imagen de configuración"> Configuración
                         </button>
-                        <!-- Menú desplegable -->
                         <div id="configMenu" class="dropdown-menu">
                             <a class="dropdown-item" href="/search-history">Historial</a>
                             <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
                             <a class="dropdown-item" href="/change-password">Cambiar Contraseña</a>
                         </div>
-                        <!-- Mostrar nombre y apellido del usuario -->
                         <div class="user-info">
                             <img src="/static/imagenes/usuario.png" alt="Imagen de usuario"> 
                             {% if session['first_name'] and session['last_name'] %}
@@ -51,8 +46,6 @@
                             User
                             {% endif %}
                         </div>
-                        
-                        <!-- Botones de redes sociales para pantallas pequeñas -->
                         <div class="social-buttons d-md-none d-flex justify-content-center">
                             <button onclick="window.open('https://www.facebook.com/UniBarranquilla?locale=es_LA', '_blank');" class="btnFacebook">
                                 <img src="/static/imagenes/facebook.png" alt="Imagen de facebook">
@@ -70,7 +63,6 @@
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                 <div class="chatbox">
                     <div class="chatbox-header d-flex justify-content-between align-items-center">
-                        
                         <div class="social-buttons d-none d-md-flex">
                             <button onclick="window.open('https://www.facebook.com/UniBarranquilla?locale=es_LA', '_blank');" class="btnFacebook">
                                 <img src="/static/imagenes/facebook.png" alt="Imagen de facebook">
@@ -82,7 +74,7 @@
                                 <img src="/static/imagenes/sitio-web.png" alt="Imagen de sitio-web">
                             </button>
                         </div>
-                        <div class="title">Portal de Ayuda IUB</div>
+                        <div class="title">Historial de Búsquedas</div>
                         <button class="btn btn-light d-block d-md-none" id="sidebarToggle">
                             <img src="/static/imagenes/menu.png" alt="Abrir barra lateral">
                         </button>
@@ -92,20 +84,28 @@
                             </button>
                         </div>
                     </div>
-                    <div class="chatbox-content">
-                        <div id="messages"></div>
-                        <div id="placeholder">
-                            <img src="/static/imagenes/file.png" alt="Imagen de bienvenida" id="welcome-image">
-                            <p id="welcome-text">¡Bienvenido/a al Asistente Virtual de la IUB!</p>
-                            <p>Estoy aquí para ayudarte con preguntas sobre admisiones, programas académicos, matrícula, becas y más. Escribe tu pregunta y obtén la información que necesitas.</p>
+                    <div class="search-history-content">
+                        <div class="container mt-4">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Consulta</th>
+                                        <th>Respuesta</th>
+                                        <th>Fecha y Hora</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="search-history-body">
+                                    {% for entry in search_history %}
+                                    <tr>
+                                        <td>{{ entry.search_query }}</td>
+                                        <td>{{ entry.bot_response }}</td>
+                                        <td>{{ entry.timestamp }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <form id="chat-form">
-                        <input type="text" id="messageInput" placeholder="Escribe aquí..." required>
-                        <button type="submit">
-                            <img src="/static/imagenes/enviar.png" alt="Enviar">
-                        </button>
-                    </form>
                 </div>
             </main>
         </div>

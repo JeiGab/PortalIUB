@@ -1,6 +1,8 @@
 import os
+import json
 import mysql.connector as sql
 import bcrypt
+from datetime import datetime  
 from dotenv import load_dotenv
 
 # Cargar las variables de entorno desde el archivo .env
@@ -74,7 +76,6 @@ def validate_login(correo, password):
             return {'id': user[0], 'first_name': user[1], 'last_name': user[2]}
     return None
 
-
 # Función para verificar si el correo ya está registrado
 def email_exists(correo):
     conn = get_database_connection()
@@ -107,8 +108,7 @@ def InsertInTable_U(datos):
         print("Error al insertar datos:", e)
         return False
 
-
-# Función para insertar una observación en la tabla 'users'
+# Función para insertar una observación en la tabla 'observations'
 def insert_observation(user_id, observation):
     try:
         conn = get_database_connection()
@@ -129,3 +129,77 @@ def insert_observation(user_id, observation):
     except Exception as e:
         print("Error al insertar la observación:", e)
         return False
+
+# Función para guardar las interacciones de cada usuario con el bot en la tabla 'interactions'
+def log_interaction(user_id, user_message, bot_response, timestamp):
+    try:
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor()
+            
+            # Asegurarse de que bot_response sea una cadena de texto
+            if isinstance(bot_response, dict):
+                bot_response = json.dumps(bot_response)
+            elif not isinstance(bot_response, str):
+                bot_response = str(bot_response)
+
+            cursor.execute("""
+                INSERT INTO interactions (user_id, user_message, bot_response, timestamp) 
+                VALUES (%s, %s, %s, %s)
+            """, (user_id, user_message, bot_response, timestamp))
+            conn.commit()
+            conn.close()
+            print("Interacción registrada correctamente.")
+            return True
+        else:
+            print("Error: No se pudo conectar a la base de datos.")
+            return False
+    except Exception as e:
+        print("Error al registrar la interacción:", e)
+        return False
+    
+# Función para guardar una búsqueda en el historial
+def save_search_history(user_id, search_query, bot_response):
+    try:
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor()
+            timestamp = datetime.now()
+
+            # Asegurarse de que bot_response sea una cadena de texto
+            if isinstance(bot_response, dict):
+                bot_response = json.dumps(bot_response)
+            elif not isinstance(bot_response, str):
+                bot_response = str(bot_response)
+
+            cursor.execute("""
+                INSERT INTO search_history (user_id, search_query, bot_response, timestamp) 
+                VALUES (%s, %s, %s, %s)
+            """, (user_id, search_query, bot_response, timestamp))
+            conn.commit()
+            conn.close()
+            print("Historial de búsqueda guardado correctamente.")
+            return True
+        else:
+            print("Error: No se pudo conectar a la base de datos.")
+            return False
+    except Exception as e:
+        print("Error al guardar el historial de búsqueda:", e)
+        return False
+
+# Función para obtener el historial de búsqueda de un usuario
+def get_search_history(user_id):
+    try:
+        conn = get_database_connection()
+        if conn:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM search_history WHERE user_id = %s ORDER BY timestamp DESC", (user_id,))
+            history = cursor.fetchall()
+            conn.close()
+            return history
+        else:
+            print("Error: No se pudo conectar a la base de datos.")
+            return []
+    except Exception as e:
+        print("Error al obtener el historial de búsqueda:", e)
+        return []

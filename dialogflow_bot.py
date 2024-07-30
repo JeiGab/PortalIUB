@@ -1,4 +1,3 @@
-# dialogflow_bot.py
 
 import os
 import json
@@ -6,6 +5,8 @@ import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
 from dotenv import load_dotenv
+from datetime import datetime
+from database import log_interaction  
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -40,13 +41,9 @@ if SERVICE_ACCOUNT_FILE:
     )
 
     # Función para interactuar con Dialogflow
-    def detect_intent_texts(project_id, session_id, texts, language_code):
+    def detect_intent_texts(project_id, session_id, texts, language_code, user_id):
         session = requests.Session()
-
-        # URL de la API de Dialogflow
         url = f'https://dialogflow.googleapis.com/v2/projects/{project_id}/agent/sessions/{session_id}:detectIntent'
-
-        # Asegúrate de que las credenciales están actualizadas
         request = google.auth.transport.requests.Request()
         credentials.refresh(request)
 
@@ -68,6 +65,11 @@ if SERVICE_ACCOUNT_FILE:
 
             response = session.post(url, headers=headers, json=body, verify=False)
             response.raise_for_status()
-            responses.append(response.json())
+            result = response.json()
+            responses.append(result)
+
+            fulfillment_text = result.get('queryResult', {}).get('fulfillmentText', '')
+            timestamp = datetime.now()
+            log_interaction(user_id, text, fulfillment_text, timestamp)
 
         return responses
