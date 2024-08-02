@@ -1,10 +1,14 @@
-function showAlert() {
+function showInitialAlert() {
     // Verifica si la alerta ya ha sido mostrada
     if (sessionStorage.getItem('alert_shown') === 'true') {
         return;
     }
 
-    // Muestra la alerta y marca como mostrada
+    showAlert();
+    sessionStorage.setItem('alert_shown', 'true');
+}
+
+function showAlert() {
     const blurOverlay = document.createElement('div');
     blurOverlay.className = 'blur-overlay';
     const alertContainer = document.createElement('div');
@@ -25,9 +29,6 @@ function showAlert() {
     `;
     document.body.appendChild(blurOverlay);
     document.body.appendChild(alertContainer);
-
-    // Establece alert_shown a true en sessionStorage
-    sessionStorage.setItem('alert_shown', 'true');
 }
 
 function closeAlert() {

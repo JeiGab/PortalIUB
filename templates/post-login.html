@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/static/css/sidebar.css"> 
     <link rel="shortcut icon" href="/static/imagenes/favicon.ico">
 </head>
-<body onload="showAlert()">
+<body onload="showInitialAlert()">
     <div class="container-fluid">
         <div class="row">
             <!-- Barra lateral -->
@@ -38,7 +38,6 @@
                         </button>
                         <!-- Menú desplegable -->
                         <div id="configMenu" class="dropdown-menu">
-                            <a class="dropdown-item" href="/search-history">Historial</a>
                             <a class="dropdown-item" href="/logout">Cerrar Sesión</a>
                             <a class="dropdown-item" href="/change-password">Cambiar Contraseña</a>
                         </div>
@@ -86,11 +85,6 @@
                         <button class="btn btn-light d-block d-md-none" id="sidebarToggle">
                             <img src="/static/imagenes/menu.png" alt="Abrir barra lateral">
                         </button>
-                        <div class="usage-button">
-                            <button onclick="showAlert();" class="btnUsage" id="btnUsage">
-                                <img src="/static/imagenes/preguntas-y-respuestas.png" alt="Imagen de Uso">
-                            </button>
-                        </div>
                     </div>
                     <div class="chatbox-content">
                         <div id="messages"></div>

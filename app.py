@@ -7,7 +7,7 @@ from flask_mail import Mail
 from dotenv import load_dotenv
 import mysql.connector as sql
 from email_utils import send_reset_email, verify_reset_token
-from database import get_database_connection, get_search_history, save_search_history, validate_login, email_exists, hash_password, InsertInTable_U, update_password, insert_observation, log_interaction
+from database import get_database_connection, validate_login, email_exists, hash_password, InsertInTable_U, update_password, insert_observation, log_interaction
 from dialogflow_bot import detect_intent_texts, PROJECT_ID
 
 load_dotenv()
@@ -109,10 +109,6 @@ def send_message():
     if not log_interaction(user_id, message, bot_response, timestamp):
         print("Error al registrar la interacción.")
     
-    # Guardar la búsqueda en el historial
-    if not save_search_history(user_id, message, bot_response):
-        print("Error al guardar la búsqueda en el historial.")
-    
     return jsonify({'response': result})
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
@@ -179,16 +175,6 @@ def post_login():
         session['alert_shown'] = False
     
     return render_template('post-login.html')
-
-@app.route('/search-history', methods=['GET'])
-def search_history():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    user_id = session.get('user_id')
-    history = get_search_history(user_id)
-    
-    return render_template('search-history.html', search_history=history)
 
 @app.route('/logout')
 def logout():
@@ -269,6 +255,54 @@ def recomends():
             flash('Error al conectar a la base de datos.', 'error')
 
     return redirect(url_for('recomends_form'))
+
+# Ruta para mostrar la página de cambio de contraseña
+@app.route('/change-password', methods=['GET'])
+def change_password():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    return render_template('change-password.html')
+
+# Ruta para procesar el formulario de cambio de contraseña
+@app.route('/change_password', methods=['POST'])
+def change_password_process():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    confirm_password = request.form['confirm_password']
+    user_id = session.get('user_id')
+    conn = get_database_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+        if not user:
+            flash('Usuario no encontrado', 'error')
+            return redirect(url_for('change_password'))
+        # Verificar la contraseña actual
+        if not bcrypt.checkpw(old_password.encode('utf-8'), user['password'].encode('utf-8')):
+            flash('Contraseña actual incorrecta', 'error')
+            return redirect(url_for('change_password'))
+        # Validar la nueva contraseña
+        if len(new_password) < 6 or len(new_password) > 12:
+            flash('La nueva contraseña debe tener entre 6 y 12 caracteres.', 'error')
+            return redirect(url_for('change_password'))
+        # Verificar si la nueva contraseña y la confirmación coinciden
+        if new_password != confirm_password:
+            flash('Las contraseñas nuevas no coinciden.', 'error')
+            return redirect(url_for('change_password'))
+        # Encriptar la nueva contraseña
+        hashed_password = hash_password(new_password)
+        # Actualizar la contraseña en la base de datos
+        if update_password(user_id, hashed_password.decode('utf-8')):
+            flash('Contraseña cambiada exitosamente', 'success')
+        else:
+            flash('Error al cambiar la contraseña', 'error')
+    else:
+        flash('Error al conectar a la base de datos', 'error')
+    return redirect(url_for('change_password'))
 
 if __name__ == '__main__':
     app.run(debug=True)
