@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
 import os
-import requests
+import bcrypt
 from datetime import datetime
 from flask_mail import Mail
 from dotenv import load_dotenv
@@ -78,6 +78,54 @@ def login():
     else:
         flash('Credenciales incorrectas', 'error')
         return render_template('login.html')
+
+# Ruta para mostrar la página de cambio de contraseña
+@app.route('/change-password', methods=['GET'])
+def change_password():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    return render_template('change-password.html')
+
+# Ruta para procesar el formulario de cambio de contraseña
+@app.route('/change_password', methods=['POST'])
+def change_password_process():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    old_password = request.form['old_password']
+    new_password = request.form['new_password']
+    confirm_password = request.form['confirm_password']
+    user_id = session.get('user_id')
+    conn = get_database_connection()
+    if conn:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+        if not user:
+            flash('Usuario no encontrado', 'error')
+            return redirect(url_for('change_password'))
+        # Verificar la contraseña actual
+        if not bcrypt.checkpw(old_password.encode('utf-8'), user['password'].encode('utf-8')):
+            flash('Contraseña actual incorrecta', 'error')
+            return redirect(url_for('change_password'))
+        # Validar la nueva contraseña
+        if len(new_password) < 6 or len(new_password) > 12:
+            flash('La nueva contraseña debe tener entre 6 y 12 caracteres.', 'error')
+            return redirect(url_for('change_password'))
+        # Verificar si la nueva contraseña y la confirmación coinciden
+        if new_password != confirm_password:
+            flash('Las contraseñas nuevas no coinciden.', 'error')
+            return redirect(url_for('change_password'))
+        # Encriptar la nueva contraseña
+        hashed_password = hash_password(new_password)
+        # Actualizar la contraseña en la base de datos
+        if update_password(user_id, hashed_password.decode('utf-8')):
+            flash('Contraseña cambiada exitosamente', 'success')
+        else:
+            flash('Error al cambiar la contraseña', 'error')
+    else:
+        flash('Error al conectar a la base de datos', 'error')
+    return redirect(url_for('change_password'))        
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
