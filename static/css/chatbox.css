@@ -159,12 +159,15 @@ button[type="submit"]:hover img {
 
     }
     .chatbox {
-        width: 100%;
-        margin-left: 0;
+        width: 90%;
+        right: 0%;
+        height: 100vh;
+        margin: 0 5px;
     }
     .alert-container {
         font-size: 0.9rem;
         padding: 15px;
+        right: 20%;
     }
     .chatbox-header .title {
         flex-grow: 1;
@@ -174,5 +177,12 @@ button[type="submit"]:hover img {
     }
     .btnConfig {
         position: relative;
+    }
+
+    .chatbox-header .title {
+        flex-grow: 1;
+        font-size: 1.2rem !important;
+        text-align: center;
+        margin-right: 10%;
     }
 }

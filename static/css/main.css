@@ -50,8 +50,8 @@ body {
 @media (max-width: 768px) {
     .navbar-title {
         position: absolute;
-        top: 50%;
-        left: 77%;
+        top: 55%;
+        left: 80%;
         transform: translate(-50%, -50%);
         text-align: center;
         width: 100%;
@@ -76,7 +76,7 @@ body {
 
     .navbar-collapse {
         position: fixed;
-        top: 60px;
+        top: 80px;
         right: 0;
         background-color: #0f1d37;
         width: 100%;
@@ -85,6 +85,6 @@ body {
     .navbar-toggler {
         position: absolute;
         right: 10px;
-        top: 10px;
+        top: 25px;
     }
 }
