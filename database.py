@@ -135,6 +135,7 @@ def log_interaction(user_id, user_message, bot_response, timestamp):
         if conn:
             cursor = conn.cursor()
             
+            # Convertir bot_response a cadena si es un diccionario
             if isinstance(bot_response, dict):
                 bot_response = json.dumps(bot_response)
             elif not isinstance(bot_response, str):

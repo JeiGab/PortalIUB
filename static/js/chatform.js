@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    // Funciones para el formulario de chat
     $('#chat-form').on('submit', function(e) {
         e.preventDefault();
         sendMessage();
@@ -22,13 +21,15 @@ $(document).ready(function() {
         .then(response => response.json())
         .then(data => {
             var responses = data.response;
+
             responses.forEach(function(response) {
-                if (typeof response === 'object' && response.hasOwnProperty('message') && response.hasOwnProperty('link')) {
-                    addMessage('bot', response.message, response.link);
-                } else {
+                if (typeof response === 'string') {
                     addMessage('bot', response);
+                } else if (typeof response === 'object') {
+                    addMessage('bot', response.message, response.link);
                 }
             });
+
             messageInput.value = '';
         })
         .catch(error => {

@@ -1,4 +1,3 @@
-
 import os
 import json
 import requests
@@ -68,8 +67,12 @@ if SERVICE_ACCOUNT_FILE:
             result = response.json()
             responses.append(result)
 
+            # Registrar la interacción con la respuesta de Dialogflow
             fulfillment_text = result.get('queryResult', {}).get('fulfillmentText', '')
             timestamp = datetime.now()
-            log_interaction(user_id, text, fulfillment_text, timestamp)
+            # Descomentar la línea si decides registrar las interacciones
+            # log_interaction(user_id, text, fulfillment_text, timestamp)
 
         return responses
+
+    # Asegúrate de que `detect_intent_texts` se llame en la parte de la lógica de tu aplicación donde sea necesario
