@@ -17,6 +17,9 @@ body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    height: 90px;
+    display: flex;
+    align-items: center;
 }
 
 .navbar-text {
@@ -45,12 +48,17 @@ body {
 }
 
 @media (max-width: 768px) {
-    .navbar-title .navbar-text {
-        font-size: 1rem;
-        position: relative;
-        left: 60%;
-        top: 5px !important;
-        transform: translateX(-50%);
+    .navbar-title {
+        position: absolute;
+        top: 50%;
+        left: 77%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        width: 100%;
+    }
+
+    .navbar-text {
+        font-size: 1rem; 
     }
 
     h1 {
@@ -64,5 +72,19 @@ body {
     .navbar-logo {
         height: 60px !important;
         margin-left: 0;
+    }
+
+    .navbar-collapse {
+        position: fixed;
+        top: 60px;
+        right: 0;
+        background-color: #0f1d37;
+        width: 100%;
+    }
+
+    .navbar-toggler {
+        position: absolute;
+        right: 10px;
+        top: 10px;
     }
 }
