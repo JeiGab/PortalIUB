@@ -54,3 +54,12 @@ $(document).ready(function() {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var messageInput = document.getElementById('messageInput');
+    
+    messageInput.addEventListener('input', function() {
+        this.style.height = 'auto'; 
+        this.style.height = (this.scrollHeight) + 'px'; 
+    });
+});

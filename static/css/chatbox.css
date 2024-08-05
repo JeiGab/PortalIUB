@@ -11,6 +11,7 @@
     border-radius: 20px;
     margin-left: -23px;
 }
+
 #placeholder {
     position: absolute;
     top: 50%;
@@ -112,8 +113,8 @@
 .message-bot {
     color: white;
     text-align: left;
-    position: relative;
-    margin: 20px auto 10px 0;
+    margin: 10px 0;
+    max-width: 90%; 
     align-self: flex-start;
 }
 
@@ -121,27 +122,33 @@ form {
     display: flex;
     align-items: center;
     position: relative;
+    padding: 10px;
+    border-radius: 0 0 20px 20px; /* Borde redondeado en la parte inferior del formulario */
 }
 
 input[type="text"] {
-    flex: 1;
+    flex-grow: 1;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 20px;
     margin-right: 10px;
+    max-height: 100px; /* Máxima altura del campo de entrada */
+    overflow-y: auto; /* Habilita el desplazamiento vertical */
+    resize: none; /* Eliminar la opción de redimensionar manualmente */
 }
 
 button[type="submit"] {
-    position: absolute;
-    right: 30px;
     padding: 0;
     border: none;
     background: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button[type="submit"] img {
-    max-width: 40px;
+    max-width: 60px;
     height: auto;
 }
 
@@ -156,25 +163,35 @@ button[type="submit"]:hover img {
 
     .sidebar.active {
         display: none;
-
     }
+
     .chatbox {
         width: 90%;
         right: 0%;
         height: 100vh;
         margin: 0 5px;
     }
+
+    .message-bot {
+        color: white;
+        text-align: left;
+        margin: 10px 0; 
+        align-self: flex-start;
+    }
+
     .alert-container {
         font-size: 0.9rem;
         padding: 15px;
         right: 20%;
     }
+
     .chatbox-header .title {
         flex-grow: 1;
         text-align: center;
         font-size: 1.2rem;
         margin-right: 12%;
     }
+
     .btnConfig {
         position: relative;
     }
